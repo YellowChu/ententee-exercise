@@ -87,7 +87,6 @@ export default function Home() {
 
   return (
     <>
-      {page} {search} {sort}
       <div className="flex justify-between">
         <h1 className="text-2xl font-medium">Tasks</h1>
 

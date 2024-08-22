@@ -51,7 +51,7 @@ class TaskListView(View):
         else:
             tasks = tasks.order_by("-created")
 
-        per_page = 7
+        per_page = 15
         page = int(request.GET.get("page", 1))
         tasks_paginator = Paginator(tasks, per_page)
         try:
