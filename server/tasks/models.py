@@ -15,7 +15,7 @@ class Task(models.Model):
         (PRIORITY_MEDIUM, "Medium"),
         (PRIORITY_LOW, "Low"),
     ]
-    PRIORITY_CHOICES_ARRAY = [choice[0] for choice in PRIORITY_CHOICES]
+    PRIORITY_CHOICES_DICT = {value: label for value, label in PRIORITY_CHOICES}
 
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=PRIORITY_HIGH)
 
@@ -24,3 +24,7 @@ class Task(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def priority_label(self):
+        return self.PRIORITY_CHOICES_DICT.get(self.priority, "Unknown")

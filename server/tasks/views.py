@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
+# from django.views.decorators.csrf import csrf_exempt
 
 from tasks.models import Task
 
@@ -15,7 +15,10 @@ def task_serializer(task: Task):
         "updated": task.updated,
         "title": task.title,
         "description": task.description,
-        "priority": task.priority,
+        "priority": {
+            "value": task.priority,
+            "label": task.priority_label,
+        },
     }
 
 
@@ -27,7 +30,7 @@ def task_payload_validation(data):
         errors["description"] = "Description is required"
     if not data.get("priority"):
         errors["priority"] = "Priority is required"
-    elif data["priority"] not in Task.PRIORITY_CHOICES_ARRAY:
+    elif int(data["priority"]) not in Task.PRIORITY_CHOICES_DICT.keys():
         errors["priority"] = "Invalid priority"
     return errors
 
@@ -38,7 +41,7 @@ class TaskListView(View):
 
         search_query = request.GET.get("search")
         if search_query:
-            tasks = tasks.filter(Q(title__icontains=search_query) | Q(description__icontains=search_query))
+            tasks = tasks.filter(Q(title__istartswith=search_query) | Q(description__istartswith=search_query))
 
         sort_by = request.GET.get("sort")
         if sort_by == "title":
@@ -46,9 +49,9 @@ class TaskListView(View):
         elif sort_by == "priority":
             tasks = tasks.order_by("-priority")
         else:
-            tasks = tasks.order_by("created")
+            tasks = tasks.order_by("-created")
 
-        per_page = 15
+        per_page = 7
         page = int(request.GET.get("page", 1))
         tasks_paginator = Paginator(tasks, per_page)
         try:
