@@ -57,7 +57,6 @@ export default function Home() {
     event.preventDefault();
 
     try {
-      console.log(newTask);
       await axios.post("/api/v1/tasks/", newTask);
       fetch();
     } catch (error) {
@@ -71,18 +70,20 @@ export default function Home() {
     { value: "priority", label: "Priority" },
   ]
 
+  useEffect(() => {
+    fetch();
+  }, [page]);
+
   const previousPage = () => {
     if (page === 1) return;
   
     setPage((prev => parseInt(prev as string) - 1));
-    fetch();
   }
 
   const nextPage = () => {
     if (page === data?.num_pages) return;
   
     setPage((prev => parseInt(prev as string) + 1));
-    fetch();
   }
 
   return (
